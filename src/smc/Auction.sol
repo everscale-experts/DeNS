@@ -71,8 +71,15 @@ contract Auction is Base, IAuction {
     tvm.accept();
     TvmCell state = _buildBidState(hashAmount);
 
-    TvmCell payload = tvm.encodeBody(Bid, owner);
-    tvm.deploy(state, payload, 1 ton, 0);
+    //TvmCell payload = tvm.encodeBody(Bid, owner);
+    //tvm.deploy(state, payload, 1 ton, 0);
+    
+    new Bid
+    {
+      value: 1 ton,
+      stateInit: state,
+      flag: 0
+    }(owner);
   }
 
   function revealBid(uint hashAmount, uint128 amount, uint owner) public override {

@@ -168,7 +168,8 @@ contract DensDebot is Debot, Transferable, Upgradable {
     Terminal.input(tvm.functionId(askDataForRegister3), "Type owner", false);
   }
   function askDataForRegister3(string value) public {
-    (_regBid.owner,) = stoi(value);
+    optional(int256) _owner = stoi(value);
+    _regBid.owner = uint256(_owner.get());
     AmountInput.get(tvm.functionId(askDataForRegister4), "Type amount", 9, 1000000000, 1000000000000000);
   }
   function askDataForRegister4(uint128 value) public {
@@ -178,13 +179,13 @@ contract DensDebot is Debot, Transferable, Upgradable {
     Terminal.print(0, format("Your salt: {} \n REMIND IT!", salt));
     IDensRoot(_addrDensRoot).hashAmountWithSalt{
       abiVer: 2,
-      extMsg: true,
+      //extMsg: true,
       sign: false,
       time: uint64(now),
       expire: 0,
       callbackId: tvm.functionId(askDataForRegister5),
       onErrorId: 0
-    }(_amount, _salt);
+    }(_amount, _salt).extMsg;
   }
   function askDataForRegister5(uint hash) public {
     _regBid.hashAmount = hash;
@@ -207,14 +208,14 @@ contract DensDebot is Debot, Transferable, Upgradable {
     TvmCell body = tvm.encodeBody(IDensRoot.registerNic, _regBid);
     IMultisig(_addrMultisig).submitTransaction{
       abiVer: 2,
-      extMsg: true,
+      //extMsg: true,
       sign: true,
       pubkey: pubkey,
       time: uint64(now),
       expire: 0,
       callbackId: 0,
       onErrorId: 0
-    }(_addrDensRoot, 1 ton, true, false, body);
+    }(_addrDensRoot, 1 ton, true, false, body).extMsg;
     Terminal.print(tvm.functionId(densMainMenu), "done");
   }
 
@@ -231,25 +232,25 @@ contract DensDebot is Debot, Transferable, Upgradable {
   function resolveName(string value) public view {
     IDensRoot(_addrDensRoot).resolve{
       abiVer: 2,
-      extMsg: true,
+      //extMsg: true,
       sign: false,
       time: uint64(now),
       expire: 0,
       callbackId: tvm.functionId(getNicWhois),
       onErrorId: 0
-    }(value);
+    }(value).extMsg;
   }
 
   function resolveNameToAddress(string value) public view {
     IDensRoot(_addrDensRoot).resolve{
       abiVer: 2,
-      extMsg: true,
+      //extMsg: true,
       sign: false,
       time: uint64(now),
       expire: 0,
       callbackId: tvm.functionId(printResolveNameToAddress),
       onErrorId: 0
-    }(value);
+    }(value).extMsg;
   }
 
   function printResolveNameToAddress(address addrNic) public {
@@ -259,13 +260,13 @@ contract DensDebot is Debot, Transferable, Upgradable {
   function getNicWhois(address addrNic) public pure {
     INic(addrNic).whois{
       abiVer: 2,
-      extMsg: true,
+      //extMsg: true,
       sign: false,
       time: uint64(now),
       expire: 0,
       callbackId: 0,
       onErrorId: 0
-    }();
+    }().extMsg;
   }
 
   function printGetNicWhois(Whois _whois) public {

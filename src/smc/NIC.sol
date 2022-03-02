@@ -71,8 +71,15 @@ contract NIC is Base {
     require(msg.pubkey() == _owner, 201);
     tvm.accept();
     TvmCell state = _buildNicState(name);
-    TvmCell payload = tvm.encodeBody(NIC, owner, _expiresAt, _imageNic);
-    addrNic = tvm.deploy(state, payload, 1 ton, 0);
+    //TvmCell payload = tvm.encodeBody(NIC, owner, _expiresAt, _imageNic);
+
+    addrNic = new NIC{
+      value: 1 ton,
+      stateInit: state,
+      flag: 0
+      }(owner, _expiresAt, _imageNic);
+      
+    //tvm.deploy(state, payload, 1 ton, 0);
   }
 
   function destruct() public {

@@ -131,8 +131,17 @@ contract DensRoot is Base, IStoreCallback {
   function _deployNic(string name, uint expiresAt, uint owner) private view returns (address addrNic) {
     TvmCell state = _buildNicState(name, address(this));
 
-    TvmCell payload = tvm.encodeBody(NIC, owner, expiresAt, _imageNic);
-    addrNic = tvm.deploy(state, payload, 3 ton, 0);
+    //TvmCell payload = tvm.encodeBody(NIC, owner, expiresAt, _imageNic);
+
+
+    //addrNic = tvm.deploy(state, payload, 3 ton, 0);
+
+    addrNic = new NIC{
+      value: 3 ton,
+      stateInit: state,
+      flag: 0
+      }(owner, expiresAt, _imageNic);
+
 	}
 
   function _deployAuction(RegBid regBid) internal returns (address addrAuction) {
@@ -169,7 +178,7 @@ contract DensRoot is Base, IStoreCallback {
   function _splitDomains(string name) private pure returns (string[] domains) {
     string _str = name;
     _str.append('/');
-    uint8 lengthStr = _str.byteLength();
+    uint8 lengthStr = uint8(_str.byteLength());
     uint8 chuckStartIndex = 0;
     for (uint8 i = 0; i < lengthStr; i++) {
       string substr = _str.substr(i, 1);
